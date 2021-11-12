@@ -20,3 +20,4 @@ class AccountHistory(models.Model):
     amount = models.PositiveBigIntegerField()
     etc = models.CharField(max_length=1000)
     account = models.ForeignKey(Account, on_delete=models.DO_NOTHING, null = True, blank = True)
+    price = models.PositiveBigIntegerField(default=0)
