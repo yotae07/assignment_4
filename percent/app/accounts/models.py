@@ -15,7 +15,7 @@ class AccountHistory(models.Model):
         (WITHDRAW, '출금')
     )
 
-    account = models.OneToOneField(Account, on_delete=models.DO_NOTHING)
+    account = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
     kind = models.CharField(choices=KIND_CHOICES, max_length=10)
     transaction_date = models.DateTimeField()
     amount = models.PositiveBigIntegerField()
