@@ -18,10 +18,13 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from api.user.views import UserViewSet
+from api.accounts.views import AccountViewset, AccountHistoryViewset
 
 
 route = DefaultRouter(trailing_slash=False)
 route.register('user', UserViewSet, basename='user')
+route.register('account', AccountViewset, basename='account')
+route.register('accounthistory', AccountHistoryViewset, basename='accounthistory')
 
 urlpatterns = route.urls
 
