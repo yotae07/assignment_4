@@ -1,26 +1,31 @@
-from django.db.models import Q
-
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import permissions
-from rest_framework.validators import ValidationError
-
-from app.accounts.models import Account, AccountHistory
-from app.user.models import User
-from .serializers import TransactionSerializer
-
 from datetime import datetime, timedelta
 
-class TransactionViewSet(CreateModelMixin, 
+from django.db.models import Q
+from rest_framework import permissions
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, \
+    DestroyModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.validators import ValidationError
+from rest_framework.viewsets import GenericViewSet
+
+from app.accounts.models import AccountHistory
+from .serializers import TransactionSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from api.pagination import CustomPagination
+
+
+class TransactionViewSet(CreateModelMixin,
                          ListModelMixin, 
                          RetrieveModelMixin, 
                          UpdateModelMixin, 
                          DestroyModelMixin, 
                          GenericViewSet):
+
     queryset = AccountHistory.objects.all()
     serializer_class = TransactionSerializer
     permission_class = IsAuthenticated
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         if self.action in ['create', 'list', 'retrive']:
@@ -35,12 +40,13 @@ class TransactionViewSet(CreateModelMixin,
         return Response(serializer.data, status = status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        period = self.request.query_params.get('period', None)
-        start = self.request.query_params.get('start', None)
-        end = self.request.query_params.get('end', None)
-        year = self.request.query_params.get('year', None)
-        month = self.request.query_params.get('month', None)
-        kind = self.request.query_params.get('kind', None)
+        period = self.request.query_params.get('period')
+        start = self.request.query_params.get('start')
+        end = self.request.query_params.get('end')
+        year = self.request.query_params.get('year')
+        month = self.request.query_params.get('month')
+        kind = self.request.query_params.get('kind')
+        sort = self.request.query_params.get('sort')
         
         date = datetime.today()
         lists = AccountHistory.objects.all()
@@ -87,11 +93,13 @@ class TransactionViewSet(CreateModelMixin,
         if year and month:
             q &= Q(transaction_date__year = f"{year}", transaction_date__month = f"{month}")
 
-        
         if kind:
             if kind == "deposit":
                 lists = AccountHistory.objects.filter(kind = "deposit").filter(q)
             elif kind == "withdraw":
                 lists = AccountHistory.objects.filter(kind = "withdraw").filter(q)
-        
-        return lists
+
+        if sort:
+            return lists.order_by("-transaction_date")
+        else:
+            return lists.order_by("transaction_date")

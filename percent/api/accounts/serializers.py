@@ -5,6 +5,7 @@ from rest_framework.validators import ValidationError
 
 from app.accounts.models import Account, AccountHistory
 
+
 class TransactionSerializer(serializers.ModelSerializer):
     account_number   = serializers.CharField(max_length=32)
     kind             = serializers.CharField(max_length=10)
@@ -48,16 +49,17 @@ class TransactionSerializer(serializers.ModelSerializer):
             if kind == 'deposit':
                 account.price += amount
                 account.save()
+                history.price += account.price
+                history.save()
             elif kind == 'withdraw':
                 account.price -= amount
                 account.save()
+                history.price += account.price
+                history.save()
 
         return history
 
     def to_representation(self, instance):
-        user_id = self.context['request'].user.id
-        price = Account.objects.get(user_id = user_id).price
-
         return {
             'id'               : instance.id,
             'account_id'       : instance.account_id,
@@ -65,5 +67,5 @@ class TransactionSerializer(serializers.ModelSerializer):
             'transaction_date' : instance.transaction_date,
             'amount'           : instance.amount,
             'etc'              : instance.etc,
-            'balance'          : price
+            'balance'          : instance.price
         }
