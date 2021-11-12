@@ -18,10 +18,11 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from api.user.views import UserViewSet
-
+from api.accounts.views import AccountViewSet
 
 route = DefaultRouter(trailing_slash=False)
 route.register('user', UserViewSet, basename='user')
+route.register('account', AccountViewSet, basename='account')
 
 urlpatterns = route.urls
 
