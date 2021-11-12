@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import CreateModelMixin
-from percent.api.accounts.serializers import AccountHistorySerializer
+from api.accounts.serializers import AccountHistorySerializer
 from rest_framework.permissions import IsAuthenticated
 
 class AccountViewSet(CreateModelMixin, GenericViewSet):
