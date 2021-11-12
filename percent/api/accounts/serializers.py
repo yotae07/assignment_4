@@ -1,6 +1,7 @@
 from django.db import transaction
 
 from rest_framework import serializers
+from rest_framework.validators import ValidationError
 
 from app.accounts.models import Account, AccountHistory
 
@@ -31,6 +32,12 @@ class TransactionSerializer(serializers.ModelSerializer):
         amount = validated_data['amount']
         etc = validated_data['etc']
         account = Account.objects.get(user_id = user_id)
+
+        if amount < 0:
+            raise ValidationError('wrong request')
+
+        if kind == "withdraw" and int(amount) > int(account.price):
+            raise ValidationError('wrong request')
 
         if Account.objects.get(user_id = user_id).account_number != account_number:
             raise ValidationError('Incorrect account_number')
