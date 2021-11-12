@@ -4,9 +4,16 @@ from rest_framework.exceptions import ValidationError
 
 class AccountHistorySerializer(serializers.ModelSerializer):
 
+
     class Meta:
         model = AccountHistory
         field = ['id', 'kind', 'transaction_data', 'amount', 'etc']
+
+    def validate_kind(self, value):
+        if value not in [AccountHistory.DEPOSIT, AccountHistory.WITHDRAW]:
+            raise ValidationError
+        
+        return value
 
     def create(self, validated_data):
         instance = AccountHistory.objects.create()
@@ -22,14 +29,9 @@ class AccountHistorySerializer(serializers.ModelSerializer):
 
             else:
                 raise Exception("lower then price")
-        else:
-            raise ValidationError
-            
+
         return instance
 
-    def to_representation(self, instance):
-        return {
-        }
 
 class AccountSerializer(serializers.ModelSerializer):
 
