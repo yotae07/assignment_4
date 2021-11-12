@@ -1,4 +1,4 @@
-# Asignment3
+# Asignment4
 원티드x위코드 백엔드 프리온보딩 과제4
 - 과제 출제 기업 정보
   - 기업명 : 8퍼센트
@@ -56,18 +56,24 @@
     - 계좌 잔액 내에서만 출금 가능 (에러처리 필요)  
   
 ## 구현 기능
-### 회사명 자동완성
-- 내용추가
+### 입금 기능
+- 입금시 계좌번호, 거래 종류 선택, 금액, 적요를 받아 입금
+- 입력된 계좌번호와 현재 유저의 account_number가 일치해야만 입금 가능
+- 금액 중 음수(-)는 입력 불가능
+- 계좌 계설을 안한 유저의 경우 에러 메세지 반환
 
-### 회사 이름으로 회사 검색
-- header의 x-wanted-language 언어값에 따라 해당 언어로 회사명 검색하여 출력
-- 출력에 "company_name", "tags" 포함
-- 검색된 회사가 없는경우 404를 리턴
+### 출금 기능
+- 입금 기능과 합쳐서 하나의 API로 기능 구현
+- 마찬가지로 금액 중 음수(-)는 입력 불가능
+- 계좌의 잔액보다 큰 금액을 출금 시도시 에러 메세지 반환
 
-### 새로운 회사 추가
-- header의 x-wanted-language 언어값에 따라 해당 언어로 입력값 리턴
-- 새로운 언어로 데이터가 추가되면 기존의 데이터베이스에 새로 언어를 생성하고 데이터를 추가
-- company_name이나 tag를 입력하지 않을 시 Key_error 
+### 거래내역 조회 기능
+- 기본적으로 전체 거래내역 조회 및 개별 거래내역 조회 가능
+- Total 6개의 query params(period, start, end, year, month, kind)를 받아 4가지 필터 기능 구현
+- period의 경우 전일, 금일, 3일 전, 일주일 전, 한달 전, 세달 전 부터 지금까지의 거래 내역을 조회 가능
+- start, end 의 경우 원하는 거래내역의 시작일과 종료일을 정하여 거래 내역 조회 가능
+- year, month는 특정한 년/월에 있었던 거래내역을 조회 가능
+- kind는 예금, 출금을 구분하여 거래내역 조회 가능
 
 ## 기술 스택
 - Back-End : python, django-rest-framework, sqlite3
@@ -81,16 +87,19 @@
 
 | Method | endpoint | Request Header | Request Body | Remark |
 |:------:|-------------|-----|------|--------|
-|GET|/companies/\<str:name\>/|x-wanted-language||회사 이름으로 회사 검색|
-|GET|/search/?query=\<str\>|x-wanted-language||회사 검색시 자동 완성|
-|POST|/companies|x-wanted-language|company_name,tag_name, language|회사 추가 기능|
-
+|POST|/user||name|회원가입 기능|
+|POST|/token||name, password|로그인 기능|
+|POST|/transaction|access_token|account_number, kind, amount, etc|입, 출금 기능|
+|GET|/transaction/\<int\>|access_token||거래 내역 조회 기능(전체리스트/개별내역)|
+|GET|/transaction?pariod=\<int\>&kind\<str\>|access_token||거래 내역 조회 기능(1,3,7,30,90일 별 + 입/출금)|
+|GET|/transaction?start=\<str\>&end=\<str\>&kind\<str\>|access_token||거래 내역 조회 기능(기간설정 + 입/출금)|
+|GET|/transaction?year=\<str\>&month=\<str\>&kind\<str\>|access_token||거래 내역 조회 기능(특정 년월 별 + 입/출금|
 
 
 
 ## API 명세(request/response)
   
-  [Postman link](https://documenter.getpostman.com/view/17228945/UVC5FTD6)
+  [Postman link](https://documenter.getpostman.com/view/17228945/UVC8CR6n)
 
 ## 폴더 구조
 ```
