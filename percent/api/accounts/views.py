@@ -51,8 +51,9 @@ class TransactionViewSet(CreateModelMixin,
         date = datetime.today()
         lists = AccountHistory.objects.all()
 
-        if period not in ["0", "1", "3", "7", "30", "90"]:
-            raise ValidationError('wrong request')
+        if period:
+            if period not in ["0", "1", "3", "7", "30", "90"]:
+                raise ValidationError('wrong request')
 
         if period == "1":
             lists = AccountHistory.objects.filter(transaction_date__day = f"{date.day-1}")
