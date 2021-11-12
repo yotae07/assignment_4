@@ -1,10 +1,12 @@
 from django.db.models import fields
 from django.http import request
 from rest_framework import serializers
+from rest_framework.validators import ValidationError
 
 from app.accounts.models import Account, AccountHistory
 from app.user.models import User
 from api.user.serializers  import UserSerializer
+
 
 class AccountSerializer(serializers.ModelSerializer):
 
@@ -28,11 +30,10 @@ class AccountHistorySerializer(serializers.ModelSerializer):
 
     def validate(self, value):
         if value['kind'] not in [AccountHistory.DEPOSIT, AccountHistory.WITHDRAW]:
-            raise Exception("value Error")
+            raise ValidationError
         return value
 
     def create(self, validated_data):
-        print(validated_data['account'])
 
         if validated_data["kind"] == "deposit":
             validated_data['account'].price += validated_data['amount']

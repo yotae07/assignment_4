@@ -19,7 +19,6 @@ from .serializers import AccountSerializer, AccountHistorySerializer
 from .pagination import CustomPagination
 
 class AccountViewset(UpdateModelMixin, GenericViewSet):
-    pass
     quryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -57,7 +56,6 @@ class AccountHistoryViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         word = self.request.query_params.get('kind', None)
-        print(self.get_queryset())
         start_date = self.request.query_params.get('start_date', self.get_queryset().first().transaction_date)
         last_date = self.request.query_params.get('last_date', self.get_queryset().last().transaction_date + timedelta(days=1))
         if word:
