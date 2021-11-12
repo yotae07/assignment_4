@@ -8,7 +8,7 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import transaction
 
@@ -57,9 +57,12 @@ class AccountHistoryViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         word = self.request.query_params.get('kind', None)
+        print(self.get_queryset())
+        start_date = self.request.query_params.get('start_date', self.get_queryset().first().transaction_date)
+        last_date = self.request.query_params.get('last_date', self.get_queryset().last().transaction_date + timedelta(days=1))
         if word:
-            queryset = self.get_queryset().filter(kind=word)
+            queryset = self.get_queryset().filter(kind=word, transaction_date__range=[start_date, last_date])
         else:
-            queryset = self.get_queryset()
+            queryset = self.get_queryset(transaction_date__range=[start_date, last_date])
         serializer = AccountHistorySerializer(queryset, many=True)
         return Response(serializer.data)
