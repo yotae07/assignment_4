@@ -7,13 +7,18 @@ from app.accounts.models import Account, AccountHistory
 from app.user.models import User
 from .serializers import TransactionSerializer
 
-class TransactionViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
+class TransactionViewSet(CreateModelMixin, 
+                         ListModelMixin, 
+                         RetrieveModelMixin, 
+                         UpdateModelMixin, 
+                         DestroyModelMixin, 
+                         GenericViewSet):
     queryset = AccountHistory.objects.all()
     serializer_class = TransactionSerializer
-    permission_classes = [AllowAny, IsAuthenticated]
+    permission_class = IsAuthenticated
 
     def get_permissions(self):
         if self.action in ['create']:
-            self.permission_classes = [permissions.IsAuthenticated]
+            self.permission_class = permissions.IsAuthenticated
 
         return super().get_permissions()

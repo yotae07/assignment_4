@@ -17,20 +17,20 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def validate_kind(self, value):
         if value not in [AccountHistory.DEPOSIT, AccountHistory.WITHDRAW]:
-            raise Exception("value Error")
+            raise ValidationError("value Error")
     
         return value
-
-    def get_count(self, obj):
-        user_id = self.context['request'].user.id
-        return
     
     def create(self, validated_data):
-        user_id = self.context['request'].user.id
         account_number = validated_data['account_number']
-        kind = validated_data['kind']
-        amount = validated_data['amount']
-        etc = validated_data['etc']
+        kind           = validated_data['kind']
+        amount         = validated_data['amount']
+        etc            = validated_data['etc']
+
+        if not Account.objects.get(user_id = user_id).exists():
+            raise ValidationError("No Account")
+
+        user_id = self.context['request'].user.id
         account = Account.objects.get(user_id = user_id)
 
         if amount < 0:
