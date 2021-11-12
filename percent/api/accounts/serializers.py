@@ -55,11 +55,15 @@ class TransactionSerializer(serializers.ModelSerializer):
         return history
 
     def to_representation(self, instance):
+        user_id = self.context['request'].user.id
+        price = Account.objects.get(user_id = user_id).price
+
         return {
             'id'               : instance.id,
             'account_id'       : instance.account_id,
             'kind'             : instance.kind,
             'transaction_date' : instance.transaction_date,
             'amount'           : instance.amount,
-            'etc'              : instance.etc
+            'etc'              : instance.etc,
+            'balance'          : price
         }
