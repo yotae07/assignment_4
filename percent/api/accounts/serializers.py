@@ -27,10 +27,11 @@ class TransactionSerializer(serializers.ModelSerializer):
         amount         = validated_data['amount']
         etc            = validated_data['etc']
         user_id = self.context['request'].user.id
-        account = Account.objects.get(user_id = user_id)
 
-        if not Account.objects.get(user_id = user_id).exists():
+        if not Account.objects.filter(user_id = user_id).exists():
             raise ValidationError("No Account")
+        
+        account = Account.objects.get(user_id = user_id)
 
         if amount < 0:
             raise ValidationError('wrong request')
